@@ -2,22 +2,22 @@
     "databases": {
         "asd": {
             "tables": {
-                "jkt": {
-                    "file": "jkt.bin",
-                    "row_length": 2,
+                "retek": {
+                    "file": "retek.bin",
+                    "row_length": 4,
                     "structure": {
-                        "t": {
+                        "id": {
                             "type": "int",
-                            "length": 2,
-                            "nullable": false
+                            "length": 4,
+                            "nullable": true
                         }
                     },
                     "primary_key": [
-                        "t"
+                        "id"
                     ],
                     "foreign_keys": {},
                     "unique_keys": [
-                        "t"
+                        "id"
                     ]
                 }
             }

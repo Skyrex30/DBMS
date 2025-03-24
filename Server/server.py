@@ -67,7 +67,7 @@ def create_table():
     
     global selected_db
     if not selected_db:
-        return jsonify({"error": "No database selected. Use USE db_name; GO first."}), 400
+        return jsonify({"error": "No database selected. Use USE db_name first."}), 400
     
     data = request.json
     db_name = data["db_name"]

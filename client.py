@@ -19,11 +19,8 @@ def use_database(db_name):
     global selected_db 
     selected_db = db_name
 
-def drop_table(db_name, table_name):
-    response = requests.post(f"{SERVER_URL}/drop_table", json={
-           "db_name": db_name,
-        "table_name": table_name
-    })
+def drop_table(table_name):
+    response = requests.post(f"{SERVER_URL}/drop_table", json={"table_name": table_name})
     print(response.json())
 
 def create_table(db_name, table_name):
@@ -92,7 +89,7 @@ def parse_command(command):
         
         table_index = parts.index("table") + 1
         table_name = parts[table_index]
-        drop_table(selected_db, table_name)
+        drop_table(table_name)
                 
     elif command.lower().startswith("create table"):
         if selected_db is None:
