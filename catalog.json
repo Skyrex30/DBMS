@@ -1,5 +1,26 @@
 {
-    "asd": {},
-    "maka": {},
-    "dsa": {}
+    "databases": {
+        "asd": {
+            "tables": {
+                "jkt": {
+                    "file": "jkt.bin",
+                    "row_length": 2,
+                    "structure": {
+                        "t": {
+                            "type": "int",
+                            "length": 2,
+                            "nullable": false
+                        }
+                    },
+                    "primary_key": [
+                        "t"
+                    ],
+                    "foreign_keys": {},
+                    "unique_keys": [
+                        "t"
+                    ]
+                }
+            }
+        }
+    }
 }

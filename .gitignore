@@ -1,1 +1,6 @@
 catalog.json
+client.py
+Server/catalog.py
+Server/database.py
+Server/table.py
+client.py
