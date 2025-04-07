@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 import json
 import os
+from db.mongodb_handler import insert_row, delete_row
 
 app = Flask(__name__)
 
@@ -117,6 +118,17 @@ def drop_table():
     save_catalog()
     return jsonify({"message": f"Table {table_name} dropped successfully"})
 
-    
+@app.route("/insert", methods=["POST"])
+def insert():
+    data = request.json
+    result = insert_row(data["table_name"], data["primary_key"], data["attributes"])
+    return jsonify(result)
+
+@app.route("/delete", methods=["POST"])
+def delete():
+    data = request.json
+    result = delete_row(data["table_name"], data["primary_key"])
+    return jsonify(result)
+
 if __name__ == "__main__":
     app.run(debug=True)

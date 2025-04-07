@@ -1,2 +1,6 @@
-catalog.json
+./catalog.json
+database.py
+table.py
+catalog.py
 client.py
+Server/db/__pycache__/mongodb_handler.cpython-312.pyc

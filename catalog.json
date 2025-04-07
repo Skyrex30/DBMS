@@ -1,26 +1,7 @@
 {
     "databases": {
-        "asd": {
-            "tables": {
-                "retek": {
-                    "file": "retek.bin",
-                    "row_length": 4,
-                    "structure": {
-                        "id": {
-                            "type": "int",
-                            "length": 4,
-                            "nullable": true
-                        }
-                    },
-                    "primary_key": [
-                        "id"
-                    ],
-                    "foreign_keys": {},
-                    "unique_keys": [
-                        "id"
-                    ]
-                }
-            }
+        "yl": {
+            "tables": {}
         }
     }
 }

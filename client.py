@@ -107,6 +107,18 @@ def parse_command(command):
         print("Invalid Command")
 
 def main():
+    data = {
+        "table_name": "Students",
+        "primary_key": "12345",
+        "attributes": {
+            "Name": "Rusu Mihai",
+            "Tel": "0745123456",
+            "email": "mrusu@gmail.com"
+        }
+    }
+
+    response = requests.post("http://127.0.0.1:5000/insert", json=data)
+    
     print("Universal DBMS CLI (Type 'exit' to quit)")
     while True:
         cmd = input("DBMS> ")
@@ -116,3 +128,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
