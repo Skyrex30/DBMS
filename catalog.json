@@ -2,6 +2,100 @@
     "databases": {
         "yl": {
             "tables": {}
+        },
+        "asd": {
+            "tables": {
+                "Tabla": {
+                    "file": "Tabla.bin",
+                    "row_length": 255,
+                    "structure": {
+                        "tas": {
+                            "type": "varchar",
+                            "length": 255,
+                            "nullable": false
+                        },
+                        "3": {
+                            "type": "int",
+                            "length": 0,
+                            "nullable": false
+                        }
+                    },
+                    "primary_key": [
+                        "tas",
+                        "3"
+                    ],
+                    "foreign_keys": {},
+                    "unique_keys": [
+                        "tas",
+                        "3"
+                    ]
+                },
+                "fds": {
+                    "file": "fds.bin",
+                    "row_length": 255,
+                    "structure": {
+                        "ff": {
+                            "type": "varchar",
+                            "length": 255,
+                            "nullable": false
+                        }
+                    },
+                    "primary_key": [
+                        "ff"
+                    ],
+                    "foreign_keys": {},
+                    "unique_keys": [
+                        "ff"
+                    ]
+                },
+                "tr": {
+                    "file": "tr.bin",
+                    "row_length": 255,
+                    "structure": {
+                        "we": {
+                            "type": "varchar",
+                            "length": 255,
+                            "nullable": true
+                        }
+                    },
+                    "primary_key": [],
+                    "foreign_keys": {},
+                    "unique_keys": []
+                },
+                "dsa": {
+                    "file": "dsa.bin",
+                    "row_length": 255,
+                    "structure": {
+                        "rew": {
+                            "type": "varchar",
+                            "length": 255,
+                            "nullable": true
+                        }
+                    },
+                    "primary_key": [],
+                    "foreign_keys": {},
+                    "unique_keys": [],
+                    "document_id": "dsa"
+                },
+                "jgj": {
+                    "file": "jgj.bin",
+                    "row_length": 0,
+                    "structure": {
+                        "345": {
+                            "type": "float",
+                            "length": 0,
+                            "nullable": false
+                        }
+                    },
+                    "primary_key": [
+                        "345"
+                    ],
+                    "foreign_keys": {},
+                    "unique_keys": [
+                        "345"
+                    ]
+                }
+            }
         }
     }
 }

@@ -4,3 +4,5 @@ table.py
 catalog.py
 client.py
 Server/db/__pycache__/mongodb_handler.cpython-312.pyc
+Server_test.py
+UI.py
