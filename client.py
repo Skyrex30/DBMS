@@ -448,6 +448,9 @@ def delete_row():
     except Exception as e:
         messagebox.showerror("Error", f"An error occurred: {str(e)}")
 
+def refresh():
+    refresh_database()
+    refresh_tables()
 
 #GUI
 root = tk.Tk()
@@ -468,7 +471,7 @@ button_frame.pack(fill=tk.X, pady=5)
 tk.Button(button_frame, text="Create DB", command=create_database).pack(side=tk.LEFT, padx=2, fill=tk.X, expand=True)
 tk.Button(button_frame, text="Drop DB", command=drop_database).pack(side=tk.LEFT, padx=2, fill=tk.X, expand=True)
 tk.Button(button_frame, text="Use DB", command=use_database).pack(side=tk.LEFT, padx=2, fill=tk.X, expand=True)
-tk.Button(left_frame, text="Refresh", command=refresh_database).pack(fill=tk.X, padx=5, pady=2)
+tk.Button(left_frame, text="Refresh", command=refresh).pack(fill=tk.X, padx=5, pady=2)
 
 #table operations - right panel
 right_frame = tk.Frame(root)
