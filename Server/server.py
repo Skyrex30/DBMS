@@ -134,7 +134,7 @@ def list_tables():
         return jsonify({"error": "Database does not exist"}), 400
     return jsonify({"tables": list(catalog["databases"][db_name]["tables"].keys())})
 
-#struktura a inserthez (kliens)
+#Structure for insert (for the Client)
 @app.route("/table_structure", methods=["GET"])
 def table_structure():
     db_name = request.args.get("db_name")
