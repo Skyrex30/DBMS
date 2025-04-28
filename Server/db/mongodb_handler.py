@@ -109,46 +109,113 @@ def drop_document(database_name, table_name):
         return {"message": f"Table {table_name} dropped from database {database_name}."}
     return {"error": "Table not found in MongoDB."}
 
-def create_index_mongo(database_name, table_name, index_fields, index_type="ascending", unique=False, sparse=False):
+def create_index_mongo(database_name, table_name, index_type, index_key):
     """
-    Creates an index in mongodb
+    Create an index document for a table based on a specified key.
+    
     Args:
-        database_name: Name of the database
-        table_name: Name of the table
-        index_fields: Expected to be a list of tuples, like [("name", "ascending"), ("age", "descending")]_
-        index_type: Type of the index(asc, desc, 2dsphere, text) (Defaults to "ascending".
-        unique (bool, optional)
-        sparse (bool, optional)
+        database_name: The database (MongoDB collection) name.
+        table_name: The table (MongoDB document) name.
+        index_type: 'unique' or 'non-unique'
+        index_key: The attribute/column to index.
+        
+    Returns:
+        A success or error message.
     """
-    
-    collection = db[database_name]#[table_name]
+    collection = db[database_name]
     table_doc = collection.find_one({"_id": table_name})
-    
-    # Maps the index type to the right MongoDB type
-    index_type_mapping = {
-        "ascending": ASCENDING,
-        "descending": DESCENDING,
-        "text": TEXT
-    }
-    
-    # Convert field names and order to MongoDB index format
-    mongo_index_fields = []
-    for field, order in index_fields:
-        mongo_index_fields.append((field, index_type_mapping.get(order, ASCENDING)))
-        
-     # Try to create the index
-    try:
-        index_options = {}
-        
-        if unique:
-            index_options["unique"] = True
-        if sparse:
-            index_options["sparse"] = True
 
-        index_name = collection.create_index(mongo_index_fields, **index_options)
-        
-        print(f"index created {index_name}")
-        return {"message": f"Index '{index_name}' created successfully."}
+    if not table_doc:
+        return {"error": f"Table {table_name} does not exist."}
 
-    except Exception as e:
-        return {"error": f"An error occurred: {str(e)}"}
+    rows = table_doc.get("rows", {})
+
+    index_doc_id = f"{table_name}_index_{index_key}"
+
+    # Check if its already existing
+    if collection.find_one({"_id": index_doc_id}):
+        return {"error": f"Index {index_doc_id} already exists."}
+
+    index_data = {}
+
+    for primary_key, attributes in rows.items():
+        value = attributes.get(index_key)
+
+        if value is None:
+            continue
+
+        if index_type == "unique":
+            if str(value) in index_data:
+                return {"error": f"Duplicate value '{value}' found for unique index '{index_key}'."}
+            index_data[str(value)] = primary_key
+        elif index_type == "non-unique":
+            if str(value) not in index_data:
+                index_data[str(value)] = []
+            index_data[str(value)].append(primary_key)
+        else:
+            return {"error": "Invalid index type. Use 'unique' or 'non-unique'."}
+
+    collection.insert_one({
+        "_id": index_doc_id,
+        "index_key": index_key,
+        "index_type": index_type,
+        "entries": index_data
+    })
+
+    return {"message": f"Index {index_doc_id} created successfully."}
+
+def update_index(database_name, table_name, index_key, primary_key, attribute_value, operation):
+    """
+    Update an index document when a row is inserted or deleted.
+
+    Args:
+        database_name: The database (MongoDB collection) name.
+        table_name: The table (MongoDB document) name.
+        index_key: The attribute/column on which the index was built.
+        primary_key: The primary key of the row being inserted or deleted.
+        attribute_value: The value of the attribute for the index.
+        operation: 'insert' or 'delete'
+    """
+    collection = db[database_name]
+    index_doc_id = f"{table_name}_index_{index_key}"
+
+    index_doc = collection.find_one({"_id": index_doc_id})
+
+    if not index_doc:
+        return {"error": f"Index {index_doc_id} does not exist."}
+
+    index_type = index_doc["index_type"]
+    entries = index_doc.get("entries", {})
+
+    value_str = str(attribute_value)
+    primary_key_str = str(primary_key)
+
+    if operation == "insert":
+        if index_type == "unique":
+            if value_str in entries:
+                return {"error": f"Duplicate value '{attribute_value}' for unique index '{index_key}'."}
+            entries[value_str] = primary_key_str
+        elif index_type == "non-unique":
+            if value_str not in entries:
+                entries[value_str] = []
+            entries[value_str].append(primary_key_str)
+
+    elif operation == "delete":
+        if index_type == "unique":
+            if entries.get(value_str) == primary_key_str:
+                del entries[value_str]
+        elif index_type == "non-unique":
+            if value_str in entries:
+                if primary_key_str in entries[value_str]:
+                    entries[value_str].remove(primary_key_str)
+                    if not entries[value_str]:  # If the list is empty we delete it
+                        del entries[value_str]
+    else:
+        return {"error": "Invalid operation. Use 'insert' or 'delete'."}
+
+    collection.update_one(
+        {"_id": index_doc_id},
+        {"$set": {"entries": entries}}
+    )
+
+    return {"message": f"Index {index_doc_id} updated successfully."}
