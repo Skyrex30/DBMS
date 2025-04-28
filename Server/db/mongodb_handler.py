@@ -8,6 +8,8 @@ def insert_row(database_name, table_name, primary_key, attributes):
     """
     Insert a row into a table in MongoDB.
     
+    The ID is the name of the table.
+    
     Args:
         database_name: Name of the database
         table_name: Name of the table
@@ -96,6 +98,7 @@ def drop_collection(database_name):
     if database_name in db.list_collection_names():
         db.drop_collection(database_name)
         return {"message": f"Database {database_name} dropped from MongoDB."}
+    
     return {"error": "Database does not exist in MongoDB."}
 
 def drop_document(database_name, table_name):
@@ -118,9 +121,10 @@ def create_index_mongo(database_name, table_name, index_fields, index_type="asce
         sparse (bool, optional)
     """
     
-    collection = db[database_name][table_name]
+    collection = db[database_name]#[table_name]
+    table_doc = collection.find_one({"_id": table_name})
     
-    # Maps the index type to the corresponding MongoDB type
+    # Maps the index type to the right MongoDB type
     index_type_mapping = {
         "ascending": ASCENDING,
         "descending": DESCENDING,
