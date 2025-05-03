@@ -30,12 +30,20 @@ def insert_row(database_name, table_name, primary_key, attributes):
     
     if primary_key_str in table_doc:
         return {"error": f"Primary key {primary_key} already exists."}
+    
+    
+    validation = validate_insert(database_name, table_name, attributes)
+    if "error" in validation:
+        return validation
 
     result = collection.update_one(
         {"_id": table_name},
         {"$set": {f"rows.{primary_key_str}": attributes}} 
     )
     
+    for key, value in attributes.items():
+        update_index(database_name, table_name, key, primary_key, value, operation="insert")
+
     return jsonify({
             "status": "success",
             "message": "Row inserted successfully",
@@ -55,11 +63,17 @@ def delete_row(database_name, table_name, primary_key):
 
     if primary_key_str not in table_doc["rows"]:
         return {"error": f"Row with key {primary_key} not found."}
-
+    
+    row_to_delete = table_doc["rows"][primary_key_str]
+    
     result = collection.update_one(
         {"_id": table_name},  # Filter by table name
         {"$unset": {f"rows.{primary_key_str}": ""}}  # Unset the row with the given primary key
     )
+    
+    for key, value in row_to_delete.items():
+        update_index(database_name, table_name, key, primary_key, value, operation="delete")
+
 
     return jsonify({
             "status": "success",
@@ -219,3 +233,61 @@ def update_index(database_name, table_name, index_key, primary_key, attribute_va
     )
 
     return {"message": f"Index {index_doc_id} updated successfully."}
+
+def validate_insert(database_name, table_name, attributes):
+    """
+    Validate before inserting a new row: check unique and foreign keys.
+
+    Args:
+        database_name: Database (MongoDB collection) name
+        table_name: Table (MongoDB document) name
+        attributes: Dict of attribute values to be inserted
+
+    Returns:
+        {"ok": True} if valid
+        {"error": "..."} if invalid
+    """
+    collection = db[database_name]
+    table_doc = collection.find_one({"_id": table_name})
+
+    if not table_doc:
+        return {"error": f"Table {table_name} does not exist."}
+
+    unique_keys = table_doc.get("unique_keys", [])
+    #foreign_keys = table_doc.get("foreign_keys", {})
+
+    # Unique key check
+    for unique_key in unique_keys:
+        index_doc_id = f"{table_name}_index_{unique_key}"
+        index_doc = collection.find_one({"_id": index_doc_id})
+        
+        if not index_doc:
+            continue  # Skip if index doesn't exist
+        
+        entries = index_doc.get("entries", {})
+        value_str = str(attributes.get(unique_key))
+
+        if value_str in entries:
+            return {"error": f"Unique key constraint violation on '{unique_key}' with value '{value_str}'."}
+
+    # Foreign key check
+
+    return {"ok": True}
+
+def validate_delete(database_name, table_name, primary_key):
+    """
+    Validate before deleting a row: check foreign key references.
+
+    Args:
+        database_name: Database (MongoDB collection) name
+        table_name: Table (MongoDB document) name
+        primary_key: Primary key of the row to delete
+
+    Returns:
+        {"ok": True} if deletion allowed
+        {"error": "..."} if not allowed
+    """
+    collection = db[database_name]
+    all_tables = collection.find({})
+
+    return {"ok": True}

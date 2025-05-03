@@ -177,7 +177,10 @@ def create_index():
     unique = data.get("unique", False)
     sparse = data.get("sparse", False)
     
-    result = create_index_mongo(db_name, table_name, index_fields, index_type, unique, sparse)
+    # Teszt
+    result = create_index_mongo("asd", "Tabla2", "unique", "Nev")
+    #result = create_unique_index(db_name, table_name, index_fields)
+    print(result)
     return result
 
 if __name__ == "__main__":
